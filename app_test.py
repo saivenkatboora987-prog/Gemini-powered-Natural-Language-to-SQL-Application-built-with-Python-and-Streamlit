@@ -13,7 +13,7 @@ genai.configure(api_key=os.getenv("GEMINI_APIKEY"))
 # Replace these with model names printed by your list_models.py
 model_choice = st.selectbox(
     "Choose Gemini Model",
- ["gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-2.5-flash"]
+    ["gemini-3.8-flash", "gemini-3.7-flash"]
 )
 
 def get_gemini_response(question, prompt, model_choice):
