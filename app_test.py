@@ -4,31 +4,37 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
+# Must be the first Streamlit command
+st.set_page_config(page_title="I can Retrieve Any SQL query")
+
 load_dotenv()
-# Provide your GenAI API Key
+genai.configure(api_key=os.getenv("GEMINI_APIKEY"))
 
-genai.configure(api_key=os.getenv('GEMINI_APIKEY'))
-
-# 🔽 Add dropdown here (right after API key config)
-# Add dropdown here (right after API key config)
+# Replace these with model names printed by your list_models.py
 model_choice = st.selectbox(
     "Choose Gemini Model",
-    ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"]
+    ["YOUR-FLASH-MODEL-1", "YOUR-FLASH-MODEL-2"]
 )
 
 def get_gemini_response(question, prompt, model_choice):
     model = genai.GenerativeModel(model_choice)
     response = model.generate_content([prompt[0], question])
-    return response.text
+    # Remove any code fences or "sql" label Gemini might add
+    text = response.text.strip()
+    text = text.replace("```sql", "").replace("```", "").strip()
+    return text
 
 def read_sql_query(sql, db):
+    # Only allow read-only queries
+    if not sql.lower().startswith("select"):
+        raise ValueError("Only SELECT queries are allowed.")
     conn = sqlite3.connect(db)
     cur = conn.cursor()
     cur.execute(sql)
     rows = cur.fetchall()
-    conn.commit()
+    columns = [d[0] for d in cur.description]
     conn.close()
-    return rows
+    return rows, columns
 
 ## Define Your Prompt
 prompt = [
@@ -45,22 +51,24 @@ prompt = [
 ]
 
 ## Streamlit App
-st.set_page_config(page_title="I can Retrieve Any SQL query")
 st.header("Gemini App To Retrieve SQL Data")
 
 question = st.text_input("Input: ", key="input")
 submit = st.button("Ask the question")
 
 if submit:
-    response = get_gemini_response(question, prompt, model_choice)
+    if not question.strip():
+        st.warning("Please type a question first.")
+    else:
+        try:
+            sql_query = get_gemini_response(question, prompt, model_choice)
 
-    # Show the generated SQL query
-    st.subheader("Generated SQL Query")
-    st.code(response, language="sql")
+            st.subheader("Generated SQL Query")
+            st.code(sql_query, language="sql")
 
-    # Run the query
-    response = read_sql_query(response, "Naresh_it_employee.db")
+            rows, columns = read_sql_query(sql_query, "Naresh_it_employee.db")
 
-    st.subheader("The Response is")
-    for row in response:
-        st.write(row)
+            st.subheader("The Response is")
+            st.dataframe([dict(zip(columns, row)) for row in rows])
+        except Exception as e:
+            st.error(f"Something went wrong: {e}")
