@@ -2,11 +2,6 @@
 
 A Streamlit app that converts plain-English questions into SQL queries using Google's Gemini API, runs them on a database, and shows the results instantly.
 
-## Demo
-
-(https://github.com/saivenkatboora987-prog/Gemini-powered-Natural-Language-to-SQL-Application-built-with-Python-and-Streamlit/blob/main/sql.png?raw=true)
-
-
 ## Features
 
 - Ask questions in plain English, no SQL knowledge needed
