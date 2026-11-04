@@ -4,7 +4,7 @@ A Streamlit app that converts plain-English questions into SQL queries using Goo
 
 ## Demo
 
-[![App Screenshot](screenshots/demo.png)](https://github.com/saivenkatboora987-prog/Gemini-powered-Natural-Language-to-SQL-Application-built-with-Python-and-Streamlit/blob/main/sql.png?raw=true)
+(https://github.com/saivenkatboora987-prog/Gemini-powered-Natural-Language-to-SQL-Application-built-with-Python-and-Streamlit/blob/main/sql.png?raw=true)
 
 
 ## Features
